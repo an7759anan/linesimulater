@@ -1,16 +1,8 @@
-/*****************************************************************************
-//  Description  : Mega168a and Wiznet W5100 Web Server
-//  Target       : TSP Linesumulater Board
-//  Compiler     : AVR-GCC 4.3.2; avr-libc 1.6.6 (WinAVR 20090313)
-//  IDE          : Atmel AVR Studio 4.19
-*****************************************************************************/
 #include <avr/pgmspace.h>
 #include <util/delay.h>
 #include <avr/eeprom.h>
 #include "W5100.h"
 #include "SPI.h"
-
-//#define MAX_BUF_WN 2048
 
 uint16_t rx_max_buf[]={0x1000,0x0800,0x0800,0};
 uint16_t rx_mask[]   ={0x0FFF,0x07FF,0x07FF,0};
@@ -86,8 +78,6 @@ uint8_t socket(uint8_t sock,uint8_t eth_protocol,uint16_t tcp_port)
       close(sock);
     }
     // Assigned Socket 0 Mode Register
-//if(sock==0) PORTC = 0x10; 
-	//sock=0;
     SPI_Write(S0_MR | offset,eth_protocol);
     // Now open the Socket 0
     SPI_Write(S0_PORT | offset,((tcp_port & 0xFF00) >> 8 ));
@@ -98,7 +88,6 @@ uint8_t socket(uint8_t sock,uint8_t eth_protocol,uint16_t tcp_port)
     // Check for Init Status
 	if (eth_protocol==MR_TCP) state=SOCK_INIT;
 	else state=SOCK_UDP;
-//    if (SPI_Read(S0_SR | offset) == SOCK_INIT)
     if (SPI_Read(S0_SR | offset) == state)
       retval=1;
     else
@@ -128,7 +117,6 @@ uint8_t listen(uint8_t sock)
 
 uint16_t send(uint8_t sock,const uint8_t *buf,uint16_t buflen)
 {
-//    uint16_t ptr,offaddr,realaddr,txsize,timeout,txbufaddrbase;   
     uint16_t ptr,offaddr,realaddr,txsize,timeout;   
 	uint16_t offset = sock<<8;
     if (buflen <= 0 || sock > 3) return 0;
@@ -150,12 +138,9 @@ uint16_t send(uint8_t sock,const uint8_t *buf,uint16_t buflen)
    // Read the Tx Write Pointer
    ptr = SPI_Read(S0_TX_WR|offset);
    offaddr = (((ptr & 0x00FF) << 8 ) + SPI_Read((S0_TX_WR|offset) + 1));
-//      txbufaddrbase = TXBUFADDR+0x800*sock;
-
     while(buflen) {
       buflen--;
       // Calculate the real W5100 physical Tx Buffer Address
-//      realaddr = txbufaddrbase + (offaddr & TX_BUF_MASK);
       realaddr = tx_base[sock] + (offaddr & tx_mask[sock]);
       // Copy the application data to the W5100 Tx Buffer
       SPI_Write(realaddr,*buf);
@@ -179,21 +164,15 @@ uint16_t recv(uint8_t sock,uint8_t *buf,uint16_t buflen)
 	uint16_t offset = sock<<8;
     if (buflen <= 0 || sock > 3) return 1;   
     // If the request size > MAX_BUF_WN,just truncate it
-//    if (buflen > MAX_BUF_WN)
     if (buflen > rx_max_buf[sock])
-//      buflen=MAX_BUF_WN - 2;
       buflen=rx_max_buf[sock] - 2;
     // Read the Rx Read Pointer
     ptr = SPI_Read(S0_RX_RD|offset);
     offaddr = (((ptr & 0x00FF) << 8 ) + SPI_Read((S0_RX_RD|offset) + 1));
-//	rxbufaddrbase=RXBUFADDR+0x800*sock;
     while(buflen) {
       buflen--;
-//      realaddr=rxbufaddrbase + (offaddr & RX_BUF_MASK);
       realaddr=rx_base[sock] + (offaddr & rx_mask[sock]);
       *buf = SPI_Read(realaddr);
-//      SPI_Read(realaddr);
-
       offaddr++;
       buf++;
     }
@@ -222,7 +201,6 @@ void setDestination(uint8_t sock, unsigned char *dst_ip_addr,uint16_t dst_port){
    SPI_Write((S0_DIPR|offset) + 3,dst_ip_addr[3]);
    SPI_Write(S0_DPORT | offset,((dst_port & 0xFF00) >> 8 ));
    SPI_Write((S0_DPORT  | offset) + 1,(dst_port & 0x00FF));
-//   SPI_Write(S0_CR | offset,CR_CONNECT);
 }
 
 void connect(uint8_t sock){

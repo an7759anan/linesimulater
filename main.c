@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <util/delay.h>
-//#include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include "Globals.h"
 #include "ports.h"
@@ -31,13 +30,6 @@ int main(void){
 
   for(;;){
      http();
-/*
-     if (globalTimeSec!=time1){
-        time1=globalTimeSec;
- 	    sprintf_P ((char *)buff, PSTR("%lu\n"),time1);
-        logger("tic...");
-	 }
-*/
      NTPclient_loop();
      controller_loop();
   }

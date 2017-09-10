@@ -66,7 +66,6 @@
 #define SOCK_PPPOE       0x5F	  // PPPOE socket
 #define TX_BUF_MASK      0x07FF   // Tx 2K Buffer Mask:
 #define RX_BUF_MASK      0x07FF   // Rx 2K Buffer Mask:
-//#define NET_MEMALLOC     0x55     // Use 2K of Tx/Rx Buffer
 #define NET_MEMALLOC     0x16     
 
 

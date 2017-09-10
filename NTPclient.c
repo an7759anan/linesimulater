@@ -11,7 +11,6 @@ uint8_t packetBuffer[48];
 uint8_t NTPclientState;
 
 void initNTPclient(){
-//  uint8_t ntp_ip_addr[]={94,100,192,29};
   uint8_t ntp_ip_addr[4];
   eeprom_read_block((void*)ntp_ip_addr, (const void*)0x50, 4);
   setDestination(2,ntp_ip_addr,123);
@@ -32,9 +31,6 @@ void initNTPclient(){
 
 void NTPclient_loop(){
   uint16_t rsize;
-//  PORTC = 0x20;
- // sprintf_P ((char*)globalBuf, PSTR("%i"),NTPclientState);
- // logger((char*)globalBuf);
   switch (NTPclientState){
     case NTPCLIENT_STATE_SUSPENSE:
 	  break;
@@ -53,8 +49,6 @@ void NTPclient_loop(){
           globalTimeSec = (globalTimeSec<<8)|globalBuf[43];  
           globalTimeSec = globalTimeSec - 2208988800UL;
           globalTime10ms =0;
-//          sprintf_P ((char*)globalBuf, PSTR("%lx\r\n"),globalTimeSec);
-//          logger((char*)globalBuf);
           NTPclientState=NTPCLIENT_STATE_SUSPENSE;
 		}
         NTPclientState=NTPCLIENT_STATE_SUSPENSE;

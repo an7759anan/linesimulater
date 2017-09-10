@@ -1,4 +1,3 @@
-//#include <avr/common.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include "Globals.h"
@@ -20,7 +19,6 @@ void initTimer(){
 ISR (TIMER1_COMPA_vect)
 {
     /* Toggle a pin on timer overflow */
-    //PORTB  ^= (1 << USER_LED);
 	if (++_globalTime10ms>99){
 	  globalTimeSec++;
       _globalTime10ms=0;

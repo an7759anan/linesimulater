@@ -5,8 +5,6 @@
 
 #define TIME_ONE_MS  141 
 #define MAX_BUF 1000
-//#define MAX_BUF 500
-//#define MAX_BUF 2048
 
 extern uint16_t qqq;
 extern uint16_t q1;

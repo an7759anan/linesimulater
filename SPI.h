@@ -4,10 +4,6 @@
 // Wiznet W5100, коды для записи и чтения
 #define WIZNET_WRITE_OPCODE 0xF0
 #define WIZNET_READ_OPCODE 0x0F
-// Порты для Mega168 SPI I/O
-//#define SPI_PORT PORTB
-//#define SPI_DDR  DDRB
-//#define SPI_CS   PORTB2
 // Порты для Mega128 SPI I/O
 #define SPI_PORT PORTB
 #define SPI_DDR  DDRB

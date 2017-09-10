@@ -33,11 +33,6 @@ int linesimulaterLoop(void){
 
 
 void setLineLength_debugg(uint16_t lineLength){
-//   uint8_t newLineBits=0;
-//   uint16_t lineLengthT=lineLength;
-//   if (lineLength==_lineLength) return;
-//   if (lineLengthT)
-   
    if (lineLength == _lineLength) return;
    uint8_t bit=0;
    switch(_lineLength){
@@ -103,7 +98,6 @@ void setLineLength_debugg(uint16_t lineLength){
    }
 
    _lineLength=lineLength;
- //  _lineBits=newLineBits;
 };
 
 void setLineLength(uint16_t lineLength){

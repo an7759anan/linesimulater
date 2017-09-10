@@ -12,13 +12,11 @@ uint8_t controller_stepsNumber;
 int8_t controller_currentStep;
 uint16_t controller_il_id, controller_exp_id;
 uint32_t controller_start_time;
-//uint16_t controller_measurementCount;
 uint16_t controller_distance;
 uint16_t _currentTimeOffset10ms;
 uint8_t _waitingForTimeOffset;
 
 void controller_init(){
-//   controller_state=CONTROLLER_STATE_WAITING_NTP;
    controller_state=CONTROLLER_STATE_NOT_CONFIGURED;
 }
 
@@ -57,7 +55,6 @@ void controller_loop(){
       case CONTROLLER_STATE_PROCESS_IN_PROGRESS:
 	     if (_waitingForTimeOffset){
              if (globalTime10ms<_currentTimeOffset10ms) return;
-//             sprintf_P ((char *)globalBuf1, PSTR("distance=%u\ntime_offset=%lu\nbreakage=%hu\nimpedance=%u\nattenuation=%u\nresistance=%u\n"),controller_distance,controller_steps[controller_currentStep].time_offset,controller_steps[controller_currentStep].breakage,controller_steps[controller_currentStep].impedance,controller_steps[controller_currentStep].attenuation,controller_steps[controller_currentStep].resistance);
              sprintf_P ((char *)globalBuf1,
 			   PSTR("elapsed_time=%lu\ttime_il=%lu\tdistance=%u\tbreakage=%hu\timpedance=%u\tattenuation=%u\tresistance=%u\n"),
 			         controller_steps[controller_currentStep].time_offset,

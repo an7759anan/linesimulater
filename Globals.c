@@ -1,4 +1,3 @@
-//#include <avr32/time.h>
 #include "Globals.h"
 
 uint8_t globalBuf[MAX_BUF+1];

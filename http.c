@@ -46,7 +46,6 @@ int sendAnswerOnGet(void){
 
   sprintf_P ((char *)globalBuf, defaultResponce0);
   send(0,globalBuf,strlen((char *)globalBuf));
-//  sprintf_P ((char *)globalBuf, defaultResponce1,15000,"checked");
   sprintf_P ((char *)globalBuf, defaultResponce1,getLineLength(),getbreakage()?"checked":"");
   sprintf_P ((char *)globalBuf1, PSTR("%X\r\n"),strlen((char *)globalBuf)-2);
   send(0,globalBuf1,strlen((char *)globalBuf1));
@@ -73,16 +72,11 @@ uint16_t port;
 
 int http(void){
   uint16_t rsize;
-//PORTC = 0x10; !
     switch(getSockState(0)) {
       case SOCK_CLOSED:
 		  logger("SOCK_CLOSED\n");
-//        if (socket(0,MR_TCP,TCP_PORT) > 0) {
   eeprom_read_block((void*)&port, (const void*)20, 2);
-//  sprintf_P (bbb, PSTR("%i"),port);
-//        if (socket(0,MR_TCP,eeprom_read_word((uint16_t*)20)) > 0) {
         if (socket(0,MR_TCP,port) > 0) {
-	      // Listen to Socket 0
 	      if (listen(0) <= 0) _delay_ms(1);
 	    }
 	    break;
@@ -117,38 +111,12 @@ int http(void){
   		    logger("GET has been got\n");
 
 	        // Create the HTTP Response	Header
-/*		    sprintf_P ((char *)globalBuf, defaultResponce0);
-logger(globalBuf);
-			send(0,globalBuf,strlen((char *)globalBuf));
-		    sprintf_P ((char *)globalBuf, defaultResponce1,15000,"checked");
-		    sprintf_P ((char *)globalBuf1, PSTR("%X\r\n"),strlen((char *)globalBuf)-2);
-			send(0,globalBuf1,strlen(globalBuf1));
-	        if (send(0,globalBuf,strlen((char *)globalBuf))==0) break; 
-logger("1\n");
-		    sprintf_P ((char *)globalBuf, defaultResponce2,"","","selected","","","selected");
-logger(".1.2\n");
-		    sprintf_P ((char *)globalBuf1, PSTR("%X\r\n"),strlen((char *)globalBuf)-2);
-logger(".1.3\n");
-			send(0,globalBuf1,strlen(globalBuf1));
-logger(globalBuf1);
-	        if (send(0,globalBuf,strlen((char *)globalBuf))==0) break; 
-logger("2\n");
-		    sprintf_P ((char *)globalBuf, defaultResponce3,"","","selected");
-		    sprintf_P ((char *)globalBuf1, PSTR("%X\r\n"),strlen((char *)globalBuf)-2);
-			send(0,globalBuf1,strlen(globalBuf1));
-	        if (send(0,globalBuf,strlen((char *)globalBuf))==0) break; 
-		    sprintf_P ((char *)globalBuf1, PSTR("0\r\n\r\n"));
-			send(0,globalBuf1,strlen(globalBuf1));
-*/
-
             if(sendAnswerOnGet()==0) break;
 
   		    logger("GET has been performed\n");
           } else if (strstr_P((char *)globalBuf,PSTR("POST"))) {
               while (1){
 		         uint16_t res=xmlParse(rsize);
-//  sprintf_P ((char *)globalBuf1, PSTR("%u\n"),res);
-//  logger((char *)globalBuf1);
 			     if (res==0) {
 	                if (send(0,globalBuf,strlen((char *)globalBuf))==0)
 					    logger("answer sending on POST failed\n");
@@ -159,25 +127,13 @@ logger("2\n");
 			     else {
 				    uint8_t* p=globalBuf;
 					uint16_t rest=rsize-res;
-//  logger((char *)globalBuf);
-//  sprintf_P ((char *)globalBuf1, PSTR("32--%u\n"),rsize);
-//  logger((char *)globalBuf1);
-//                    for (;res<=rsize;res++){
                     for (;res<rsize;res++){
                        *p++=globalBuf[res];
-//  logger("q");
 					}
-//  logger((char *)globalBuf);
-//  logger(p);
                     rsize=recv_size(0); 
                     if (rsize>0){
-//  sprintf_P ((char *)globalBuf1, PSTR("33--%u\n"),rsize);
-//  logger((char *)globalBuf1);
                        if (rsize> MAX_BUF-rest+1) rsize=MAX_BUF-rest+1;
-//  sprintf_P ((char *)globalBuf1, PSTR("34--%u\n"),rsize);
-//  logger((char *)globalBuf1);
                        recv(0,p,rsize);
-//  logger((char *)globalBuf);
                        rsize+=rest;
 		            }
 					else {
