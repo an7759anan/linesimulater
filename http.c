@@ -23,7 +23,7 @@ int sendAnswerOnGet(void){
   char* p1=strstr_P((char *)globalBuf,PSTR("line_length="));
   if (p1) {
      sscanf_P(p1,PSTR("line_length=%u&"),&v);
-	 setLineLength(v);
+	 setLineLength_debugg(v);
   
      p1=strstr_P((char *)globalBuf,PSTR("breakage="));
      if (p1) setbreakage(1);

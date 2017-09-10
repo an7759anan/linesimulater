@@ -4,6 +4,7 @@
 int linesimulaterInit(void);
 int linesimulaterLoop(void);
 
+void setLineLength_debugg(uint16_t lineLength);
 void setLineLength(uint16_t lineLength);
 void setbreakage(uint8_t breakage);
 void setimpendance(uint16_t impendance);
