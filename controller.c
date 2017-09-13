@@ -28,10 +28,12 @@ void _start(){
 }
 
 void controller_start(){
-  if (NTPclient_getState() == NTPCLIENT_STATE_SUSPENSE){
+/*  if (NTPclient_getState() == NTPCLIENT_STATE_SUSPENSE){
      sendNTPRequest();
      controller_state = CONTROLLER_STATE_WAITING_NTP;
   }
+*/
+  controller_state = CONTROLLER_STATE_WAITING_NTP;
 }
 
 void controller_stop(){
@@ -41,14 +43,22 @@ void controller_stop(){
 void controller_loop(){
    switch(controller_state){
       case CONTROLLER_STATE_WAITING_NTP:
-	     if (NTPclient_getState() == NTPCLIENT_STATE_SUSPENSE
+/*	     if (NTPclient_getState() == NTPCLIENT_STATE_SUSPENSE
 		  && globalTimeSec >= controller_start_time){
+            _start();
+		 }
+*/
+	     if (globalTimeSec >= controller_start_time){
             _start();
 		 }
 	     break;
       case CONTROLLER_STATE_NOT_CONFIGURED:
 	     break;
       case CONTROLLER_STATE_IN_CONFIGURING:
+	     if (NTPclient_getState() == NTPCLIENT_STATE_SUSPENSE){
+            controller_state=CONTROLLER_STATE_WAITING_START;
+		 }
+
 	     break;
       case CONTROLLER_STATE_WAITING_START:
 	     break;

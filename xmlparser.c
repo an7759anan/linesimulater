@@ -6,6 +6,7 @@
 #include "logger.h"
 #include "linesimulater.h"
 #include "controller.h"
+#include "NTPclient.h"
 
 uint8_t xmlParseState=0;
 uint8_t command;// 1- configure, 2-
@@ -170,7 +171,15 @@ uint16_t xmlParse(uint16_t rsize){
            controller_stepsNumber--;
            controller_il_id=_il_id;
 		   controller_exp_id=_exp_id;
-           controller_state=CONTROLLER_STATE_WAITING_START;
+//           controller_state=CONTROLLER_STATE_WAITING_START;
+
+
+  if (NTPclient_getState() == NTPCLIENT_STATE_SUSPENSE){
+     sendNTPRequest();
+     controller_state = CONTROLLER_STATE_IN_CONFIGURING;
+  }
+
+
 		   sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_ok,"configure",_il_id,_exp_id);
            xmlParseState=0;
 		   return 0;
