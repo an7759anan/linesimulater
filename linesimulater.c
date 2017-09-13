@@ -1,5 +1,9 @@
 #include <avr/io.h>
+#include <stdio.h>
 #include <util/delay.h>
+#include <avr/pgmspace.h>
+#include "logger.h"
+#include "Globals.h"
 
 uint16_t _lineLength;
 uint8_t _lineBits;
@@ -102,7 +106,7 @@ void setLineLength_debugg(uint16_t lineLength){
 
 void setLineLength(uint16_t lineLength){
    
-   if (lineLength == _lineLength) return;
+//   if (lineLength == _lineLength) return;
    //switch off all 
       PORTC |= 0x3F;
 	  PORTD |= 1<<PORTD6;
@@ -112,28 +116,36 @@ void setLineLength(uint16_t lineLength){
    // calculate bit mask for switch on
    uint8_t bit=0;
    uint16_t ll=lineLength;   
+//sprintf_P ((char *)globalBuf1, PSTR("%u\n"),lineLength);
+//logger((char *)globalBuf1);
    if (ll >= 10000){
       bit |= 0x20; // + 10000
       ll -= 10000;
+//logger("+10000\n");
    }
    if (ll >= 5000){
       bit |= 0x10; // + 5000
 	  ll -= 5000;
+//logger("+5000\n");
    }
    if (ll >= 3000){
       bit |= 0x08; // + 3000
 	  ll -= 3000;
+//logger("+3000\n");
    }
    if (ll >= 1000){
       bit |= 0x04; // + 1000
 	  ll -= 1000;
+//logger("+1000\n");
    }
    if (ll >= 1000){
       bit |= 0x02; // + 1000
 	  ll -= 1000;
+//logger("+1000\n");
    }
    if (ll >= 500){
       bit |= 0x01; // + 500
+//logger("+500\n");
    }
    if (bit){
       PORTC |= bit;
@@ -141,13 +153,15 @@ void setLineLength(uint16_t lineLength){
       _delay_ms(50);
 	  PORTD &= ~(1<<PORTD7);
       PORTC &= ~bit;
-   } else {
+   }
+/*    else {
       PORTC |= 0x3f;
 	  PORTD |= 1<<PORTD6;
       _delay_ms(50);
 	  PORTD &= ~(1<<PORTD6);
       PORTC &= ~0x3f;
    }
+*/
    _lineLength=lineLength;
 };
 

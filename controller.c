@@ -75,7 +75,7 @@ void controller_loop(){
 					 controller_steps[controller_currentStep].attenuation,
 					 controller_steps[controller_currentStep].resistance);
              logger((char *)globalBuf1);
-             setLineLength(controller_distance*1000);
+//             setLineLength(controller_distance*1000);
              setbreakage(controller_steps[controller_currentStep].breakage);
              setimpendance(controller_steps[controller_currentStep].impedance);
              setattenuation(controller_steps[controller_currentStep].attenuation);

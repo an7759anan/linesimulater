@@ -179,6 +179,10 @@ uint16_t xmlParse(uint16_t rsize){
      controller_state = CONTROLLER_STATE_IN_CONFIGURING;
   }
 
+//sprintf_P ((char *)globalBuf1, PSTR("%u\n"),controller_distance);
+//logger((char *)globalBuf1);
+
+             setLineLength(controller_distance*1000);
 
 		   sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_ok,"configure",_il_id,_exp_id);
            xmlParseState=0;
