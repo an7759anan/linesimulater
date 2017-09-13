@@ -10,7 +10,7 @@
 
 uint8_t xmlParseState=0;
 uint8_t command;// 1- configure, 2-
-uint16_t _il_id, _exp_id;
+uint16_t _il_id, _exp_id, _maxTime;
 
 
 //STEP step;
@@ -28,6 +28,11 @@ void parse_exp_id(){
 void parse_start_time(){
   char* p1=strstr_P((char *)globalBuf,PSTR("<start_time>"));
   sscanf_P(p1,PSTR("<start_time>%lu</start_time>"),&controller_start_time);
+}
+
+void parse_maxTime(){
+  char* p1=strstr_P((char *)globalBuf,PSTR("<maxTime>"));
+  sscanf_P(p1,PSTR("<maxTime>%u</maxTime>"),&_maxTime);
 }
 
 void parse_distance(){
@@ -153,6 +158,7 @@ uint16_t xmlParse(uint16_t rsize){
 
            parse_il_id();
            parse_exp_id();
+		   parse_maxTime();
            parse_distance();
            controller_stepsNumber=0;
        case 1:// Configure command parsing in progress ...
@@ -166,12 +172,18 @@ uint16_t xmlParse(uint16_t rsize){
 			  }
 			  pp0 = pp1;
               logger("Configure step elapsed\n");
-              if(controller_stepsNumber>STEPSBUFSIZE) break;
+              if(controller_stepsNumber>STEPSBUFSIZE-1) break;
            }
            controller_stepsNumber--;
            controller_il_id=_il_id;
 		   controller_exp_id=_exp_id;
 //           controller_state=CONTROLLER_STATE_WAITING_START;
+       controller_steps[controller_stepsNumber].time_offset=_maxTime*1000;
+       controller_steps[controller_stepsNumber].impedance=0xFFFF;
+       controller_steps[controller_stepsNumber].attenuation=0xFFFF;
+       controller_steps[controller_stepsNumber].resistance=0xFFFF;
+       controller_steps[controller_stepsNumber].breakage=0;
+	   controller_stepsNumber++;
 
 
   if (NTPclient_getState() == NTPCLIENT_STATE_SUSPENSE){
