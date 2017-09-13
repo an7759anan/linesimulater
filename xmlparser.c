@@ -65,8 +65,8 @@ char* parseNextStepTag(char* p, uint8_t sNum){
 	   else if (strstr_P(p1,PSTR("line_break"))){
           step->breakage=1;
 	   }
-	   else {
-
+	   else if (strstr_P(p1,PSTR("crushed"))){
+          step->breakage=1;
 	   }
 	   *p2='/';
 	   return p2+2;
