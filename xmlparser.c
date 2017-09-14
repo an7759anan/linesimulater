@@ -73,6 +73,21 @@ char* parseNextStepTag(char* p, uint8_t sNum){
 	   else if (strstr_P(p1,PSTR("crushed"))){
           step->breakage=1;
 	   }
+	   else if (strstr_P(p1,PSTR("bended"))){
+          step->breakage=1;
+	   }
+	   else if (strstr_P(p1,PSTR("overheated"))){
+          step->breakage=1;
+	   }
+	   else if (strstr_P(p1,PSTR("inside explosion funnel"))){
+          step->breakage=1;
+	   }
+	   else if (strstr_P(p1,PSTR("fail command post"))){
+          step->breakage=1;
+	   }
+	   else if (strstr_P(p1,PSTR("overtension"))){
+          step->breakage=1;
+	   }
 	   *p2='/';
 	   return p2+2;
 	} else {// Finish step tag not found
