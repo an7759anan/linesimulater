@@ -51,7 +51,10 @@ void NTPclient_loop(){
           globalTime10ms =0;
           NTPclientState=NTPCLIENT_STATE_SUSPENSE;
 		}
-        NTPclientState=NTPCLIENT_STATE_SUSPENSE;
+		else 
+          NTPclientState=NTPCLIENT_STATE_FAILED;
+	  break;
+    case NTPCLIENT_STATE_FAILED:
 	  break;
     default:
 	  logger("NTP ???\n");
@@ -60,7 +63,8 @@ void NTPclient_loop(){
 }
 
 void sendNTPRequest(){
-  if (NTPclientState == NTPCLIENT_STATE_SUSPENSE)
+  if (NTPclientState == NTPCLIENT_STATE_SUSPENSE
+   || NTPclientState == NTPCLIENT_STATE_FAILED)
     NTPclientState=NTPCLIENT_STATE_SENDREQUEST;
 }
 

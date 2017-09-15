@@ -58,7 +58,9 @@ void controller_loop(){
 	     if (NTPclient_getState() == NTPCLIENT_STATE_SUSPENSE){
             controller_state=CONTROLLER_STATE_WAITING_START;
 		 }
-
+		 else if (NTPclient_getState() == NTPCLIENT_STATE_FAILED){
+            controller_state=CONTROLLER_STATE_CONFIG_ERROR;
+		 }
 	     break;
       case CONTROLLER_STATE_WAITING_START:
 	     break;
