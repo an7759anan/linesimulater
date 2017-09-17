@@ -12,9 +12,6 @@ uint8_t xmlParseState=0;
 uint8_t command;// 1- configure, 2-
 uint16_t _il_id, _exp_id, _maxTime;
 
-
-//STEP step;
-
 void parse_il_id(){
   char* p1=strstr_P((char *)globalBuf,PSTR("<il_id>"));
   sscanf_P(p1,PSTR("<il_id>%u</il_id>"),&_il_id);
@@ -192,25 +189,17 @@ uint16_t xmlParse(uint16_t rsize){
            controller_stepsNumber--;
            controller_il_id=_il_id;
 		   controller_exp_id=_exp_id;
-//           controller_state=CONTROLLER_STATE_WAITING_START;
-       controller_steps[controller_stepsNumber].time_offset=_maxTime*1000;
-       controller_steps[controller_stepsNumber].impedance=0xFFFF;
-       controller_steps[controller_stepsNumber].attenuation=0xFFFF;
-       controller_steps[controller_stepsNumber].resistance=0xFFFF;
-       controller_steps[controller_stepsNumber].breakage=0;
-	   controller_stepsNumber++;
-
-
-  if (NTPclient_getState() == NTPCLIENT_STATE_SUSPENSE){
-     sendNTPRequest();
-     controller_state = CONTROLLER_STATE_IN_CONFIGURING;
-  }
-
-//sprintf_P ((char *)globalBuf1, PSTR("%u\n"),controller_distance);
-//logger((char *)globalBuf1);
-
-             setLineLength(controller_distance*1000);
-
+           controller_steps[controller_stepsNumber].time_offset=_maxTime*1000;
+           controller_steps[controller_stepsNumber].impedance=0xFFFF;
+           controller_steps[controller_stepsNumber].attenuation=0xFFFF;
+           controller_steps[controller_stepsNumber].resistance=0xFFFF;
+           controller_steps[controller_stepsNumber].breakage=0;
+	       controller_stepsNumber++;
+           if (NTPclient_getState() == NTPCLIENT_STATE_SUSPENSE){
+              sendNTPRequest();
+              controller_state = CONTROLLER_STATE_IN_CONFIGURING;
+           } 
+           setLineLength(controller_distance*1000);
 		   sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_ok,"configure",_il_id,_exp_id);
            xmlParseState=0;
 		   return 0;

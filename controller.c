@@ -28,11 +28,6 @@ void _start(){
 }
 
 void controller_start(){
-/*  if (NTPclient_getState() == NTPCLIENT_STATE_SUSPENSE){
-     sendNTPRequest();
-     controller_state = CONTROLLER_STATE_WAITING_NTP;
-  }
-*/
   controller_state = CONTROLLER_STATE_WAITING_NTP;
 }
 
@@ -43,11 +38,6 @@ void controller_stop(){
 void controller_loop(){
    switch(controller_state){
       case CONTROLLER_STATE_WAITING_NTP:
-/*	     if (NTPclient_getState() == NTPCLIENT_STATE_SUSPENSE
-		  && globalTimeSec >= controller_start_time){
-            _start();
-		 }
-*/
 	     if (globalTimeSec >= controller_start_time){
             _start();
 		 }
@@ -77,7 +67,6 @@ void controller_loop(){
 					 controller_steps[controller_currentStep].attenuation,
 					 controller_steps[controller_currentStep].resistance);
              logger((char *)globalBuf1);
-//             setLineLength(controller_distance*1000);
              setbreakage(controller_steps[controller_currentStep].breakage);
              setimpendance(controller_steps[controller_currentStep].impedance);
              setattenuation(controller_steps[controller_currentStep].attenuation);

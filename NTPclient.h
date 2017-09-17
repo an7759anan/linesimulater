@@ -6,9 +6,6 @@
 #define NTPCLIENT_STATE_WAITANSWER 2
 #define NTPCLIENT_STATE_FAILED 3
 
-
-
-
 void initNTPclient();
 void NTPclient_loop();
 void sendNTPRequest();

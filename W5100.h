@@ -64,10 +64,6 @@
 #define SOCK_IPRAW       0x32	  // IP raw mode socket
 #define SOCK_MACRAW      0x42	  // MAC raw mode socket
 #define SOCK_PPPOE       0x5F	  // PPPOE socket
-#define TX_BUF_MASK      0x07FF   // Tx 2K Buffer Mask:
-#define RX_BUF_MASK      0x07FF   // Rx 2K Buffer Mask:
-#define NET_MEMALLOC     0x16     
-
 
 void W5100_Init(void);
 void close(uint8_t sock);
