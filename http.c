@@ -74,8 +74,8 @@ int http(void){
   uint16_t rsize;
     switch(getSockState(0)) {
       case SOCK_CLOSED:
-		  logger("SOCK_CLOSED\n");
-  eeprom_read_block((void*)&port, (const void*)20, 2);
+		logger("SOCK_CLOSED\n");
+        eeprom_read_block((void*)&port, (const void*)20, 2);
         if (socket(0,MR_TCP,port) > 0) {
 	      if (listen(0) <= 0) _delay_ms(1);
 	    }

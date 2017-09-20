@@ -19,16 +19,19 @@ uint8_t buff[7];
 uint32_t time1=0;
 
 int main(void){
-  globalBuf[MAX_BUF]=0;// \0 terminator for string functions
-  initPorts();
-  W5100_Init();
-  initLoggerFromEEPROM();
-  initNTPclient();
-  initTimer();
-  linesimulaterInit();
-  controller_init();
-
+  needRestart=1;
   for(;;){
+	 if(needRestart){
+        globalBuf[MAX_BUF]=0;// \0 terminator for string functions
+        initPorts();
+        W5100_Init();
+        initLoggerFromEEPROM();
+        initNTPclient();
+        initTimer();
+        linesimulaterInit();
+        controller_init();
+        needRestart=0;
+	 }
      http();
      NTPclient_loop();
      controller_loop();

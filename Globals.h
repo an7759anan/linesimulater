@@ -14,6 +14,6 @@ extern uint32_t globalTimeSec;
 extern uint8_t _globalTime10ms;
 extern uint16_t globalTime10ms;
 
-
+extern uint8_t needRestart;
 
 #endif

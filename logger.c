@@ -18,6 +18,11 @@ void initLoggerFromEEPROM(){
   socket(1,MR_UDP,dst_port);
 }
 
+void logger_SaveSettings(uint8_t *loggerip, uint16_t loggerport){
+  eeprom_write_block((void*)loggerip, (const void*)0x40, 4);
+  eeprom_write_block((void*)&loggerport, (const void*)0x44, 2);
+}
+
 
 int logger(const char *buf){
   send(1,(uint8_t*)buf,strlen(buf)+1); 

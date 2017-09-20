@@ -76,5 +76,5 @@ uint16_t recv_size(uint8_t sock);
 void setDestination(uint8_t sock, unsigned char* dst_ip_addr,uint16_t dst_port);
 void connect(uint8_t sock);
 uint8_t getSockState(uint8_t sock);
-
+void W5100_SaveSettings(uint8_t *ip, uint16_t ipport, uint8_t *netmask);
 #endif

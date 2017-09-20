@@ -29,6 +29,11 @@ void initNTPclient(){
   NTPclientState=NTPCLIENT_STATE_SUSPENSE;
 }
 
+void NTPclient_SaveSettings(uint8_t *ntp){
+  eeprom_write_block((void*)ntp, (const void*)0x50, 4);
+}
+
+
 void NTPclient_loop(){
   uint16_t rsize;
   switch (NTPclientState){

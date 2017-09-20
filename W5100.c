@@ -59,6 +59,15 @@ void W5100_Init(void)
   _delay_ms(10);
 }
 
+void W5100_SaveSettings(uint8_t *ip, uint16_t ipport, uint8_t *netmask){
+  eeprom_write_byte((uint8_t*)0x10,ip[0]);
+  eeprom_write_byte((uint8_t*)0x11,ip[1]);
+  eeprom_write_byte((uint8_t*)0x12,ip[2]);
+  eeprom_write_byte((uint8_t*)0x13,ip[3]);
+  eeprom_write_block((void*)&ipport, (const void*)20, 2);
+}
+
+
 void close(uint8_t sock)
 {
    if (sock > 3) return;

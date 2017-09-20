@@ -10,5 +10,6 @@ void initNTPclient();
 void NTPclient_loop();
 void sendNTPRequest();
 uint8_t NTPclient_getState();
+void NTPclient_SaveSettings(uint8_t *ntp);
 
 #endif

@@ -51,5 +51,21 @@ u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
     </result>\
 </root>";
 
+char fromILtoFA_SPS_settings[] PROGMEM =\
+u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
+<root>\
+    <result action=\"settings\" state=\"1\">\
+        <parameters>\
+            <ip>%hu.%hu.%hu.%hu</ip>\
+            <ipport>%u</ipport>\
+            <netmask>%hu.%hu.%hu.%hu</netmask>\
+            <logger>%hu.%hu.%hu.%hu</logger>\
+            <loggerport>%u</loggerport>\
+            <ntp>%hu.%hu.%hu.%hu</ntp>\
+        </parameters>\
+        <message>Настройки контроллера ИЛ изменены</message>\
+    </result>\
+</root>";
+
 
 #endif

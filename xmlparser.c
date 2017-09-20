@@ -7,6 +7,7 @@
 #include "linesimulater.h"
 #include "controller.h"
 #include "NTPclient.h"
+#include "W5100.h"
 
 uint8_t xmlParseState=0;
 uint8_t command;// 1- configure, 2-
@@ -36,6 +37,72 @@ void parse_distance(){
   char* p1=strstr_P((char *)globalBuf,PSTR("<wareData distance=\""));
   sscanf_P(p1,PSTR("<wareData distance=\"%u\""),&controller_distance);
 }
+
+uint8_t ip[4];
+uint8_t netmask[4];
+uint8_t loggerip[4];
+uint8_t ntp[4];
+
+uint16_t ipport;
+uint16_t loggerport;
+
+uint16_t v;
+
+void parse_ip(){
+  char *p1=strstr_P((char *)globalBuf,PSTR("<ip>"));
+  sscanf_P(p1,PSTR("<ip>%hu."),&v); ip[0]=v;
+  p1=strstr_P(p1,PSTR("."));
+  sscanf_P(p1,PSTR(".%hu."),&v); ip[1]=v;
+  p1=strstr_P(++p1,PSTR("."));
+  sscanf_P(p1,PSTR(".%hu."),&v); ip[2]=v;
+  p1=strstr_P(++p1,PSTR("."));
+  sscanf_P(p1,PSTR(".%hu</ip>"),&v); ip[3]=v;
+}
+
+
+void parse_ipport(){
+  char* p1=strstr_P((char *)globalBuf,PSTR("<ipport>"));
+  sscanf_P(p1,PSTR("<ipport>%u</ipport>"),&ipport);
+}
+
+void parse_netmask(){
+  char *p1=strstr_P((char *)globalBuf,PSTR("<netmask>"));
+  sscanf_P(p1,PSTR("<netmask>%hu."),&v); netmask[0]=v;
+  p1=strstr_P(p1,PSTR("."));
+  sscanf_P(p1,PSTR(".%hu."),&v); netmask[1]=v;
+  p1=strstr_P(++p1,PSTR("."));
+  sscanf_P(p1,PSTR(".%hu."),&v); netmask[2]=v;
+  p1=strstr_P(++p1,PSTR("."));
+  sscanf_P(p1,PSTR(".%hu</netmask>"),&v); netmask[3]=v;
+}
+
+void parse_loggerip(){
+  char *p1=strstr_P((char *)globalBuf,PSTR("<logger>"));
+  sscanf_P(p1,PSTR("<logger>%hu."),&v); loggerip[0]=v;
+  p1=strstr_P(p1,PSTR("."));
+  sscanf_P(p1,PSTR(".%hu."),&v); loggerip[1]=v;
+  p1=strstr_P(++p1,PSTR("."));
+  sscanf_P(p1,PSTR(".%hu."),&v); loggerip[2]=v;
+  p1=strstr_P(++p1,PSTR("."));
+  sscanf_P(p1,PSTR(".%hu</logger>"),&v); loggerip[3]=v;
+}
+
+void parse_loggerport(){
+  char* p1=strstr_P((char *)globalBuf,PSTR("<loggerport>"));
+  sscanf_P(p1,PSTR("<loggerport>%u</loggerport>"),&loggerport);
+}
+
+void parse_ntp(){
+  char *p1=strstr_P((char *)globalBuf,PSTR("<ntp>"));
+  sscanf_P(p1,PSTR("<logger>%hu."),&v); ntp[0]=v;
+  p1=strstr_P(p1,PSTR("."));
+  sscanf_P(p1,PSTR(".%hu."),&v); ntp[1]=v;
+  p1=strstr_P(++p1,PSTR("."));
+  sscanf_P(p1,PSTR(".%hu."),&v); ntp[2]=v;
+  p1=strstr_P(++p1,PSTR("."));
+  sscanf_P(p1,PSTR(".%hu</ntp>"),&v); ntp[3]=v;
+}
+
 
 char* parseNextStepTag(char* p, uint8_t sNum){
   char* p1=strstr_P(p,PSTR("<step"));
@@ -148,6 +215,21 @@ uint16_t xmlParse(uint16_t rsize){
            logger("Got getState command\n");
            parse_il_id();
 		   sprintf_P ((char *)globalBuf, fromILtoFA_SPS_getState,controller_state,controller_il_id,controller_exp_id,getElapsedTime(),globalTimeSec,controller_currentStep);
+		   return 0;
+		 }
+		 else if (strstr_P((char *)globalBuf,PSTR("<action>settings</action>"))){
+           logger("Got settings command\n");
+           parse_ip();
+           parse_ipport();
+           parse_netmask();
+           parse_loggerip();
+           parse_loggerport();
+           parse_ntp();
+		   sprintf_P ((char *)globalBuf, fromILtoFA_SPS_settings,ip[0],ip[1],ip[2],ip[3],ipport,netmask[0],netmask[1],netmask[2],netmask[3],loggerip[0],loggerip[1],loggerip[2],loggerip[3],loggerport,ntp[0],ntp[1],ntp[2],ntp[3]);
+           W5100_SaveSettings(ip, ipport, netmask);
+		   logger_SaveSettings(loggerip, loggerport);
+		   NTPclient_SaveSettings(ntp);
+           needRestart=1;
 		   return 0;
 		 }
 		 else if (strstr_P((char *)globalBuf,PSTR("<action>configure</action>"))==0){
