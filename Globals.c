@@ -7,6 +7,6 @@ uint32_t globalTimeSec;
 uint8_t _globalTime10ms;
 uint16_t globalTime10ms;
 
-
+uint8_t needRestart;
 
 

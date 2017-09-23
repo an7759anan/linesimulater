@@ -15,6 +15,14 @@ u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
 </result>\
 </root>";
 
+char fromILtoFA_SPS_start_stop_absent_params[] PROGMEM =\
+u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
+<root>\
+<result action=\"%s\" state=\"0\">\
+<message>Отсутствуют необходимые параметры</message>\
+</result>\
+</root>";
+
 char fromILtoFA_SPS_configure_start_stop_error[] PROGMEM =\
 u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
 <root>\
@@ -28,7 +36,23 @@ u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
 </result>\
 </root>";
 
-char fromILtoFA_SPS_bad_XML_format[] PROGMEM = u8"Bad XML format\n";
+
+char fromILtoFA_SPS_start_bad_start_time[] PROGMEM =\
+u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
+<root>\
+<result action=\"start\" state=\"0\">\
+<message>Ошибочные параметры (время старта из прошлого)</message>\
+</result>\
+</root>";
+
+
+char fromILtoFA_SPS_bad_XML_format[] PROGMEM =\
+u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
+<root>\
+<result action=\"unknown\" state=\"0\">\
+<message>Некорректный запрос (отсутствующий в списке поддерживаемых запросов / action)</message>\
+</result>\
+</root>";
 
 char fromILtoFA_SPS_getState[] PROGMEM =\
 u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
