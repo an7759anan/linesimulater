@@ -45,12 +45,19 @@ u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
 </result>\
 </root>";
 
+char fromILtoFA_SPS_uncknown_command[] PROGMEM =\
+u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
+<root>\
+<result action=\"unknown\" state=\"0\">\
+<message>Некорректный запрос (отсутствующий в списке поддерживаемых запросов / action)</message>\
+</result>\
+</root>";
 
 char fromILtoFA_SPS_bad_XML_format[] PROGMEM =\
 u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
 <root>\
 <result action=\"unknown\" state=\"0\">\
-<message>Некорректный запрос (отсутствующий в списке поддерживаемых запросов / action)</message>\
+<message>Неправильный XML формат</message>\
 </result>\
 </root>";
 

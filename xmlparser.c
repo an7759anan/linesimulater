@@ -16,8 +16,7 @@ uint16_t _il_id, _exp_id, _maxTime;
 uint8_t parse_il_id(){
   char* p1=strstr_P((char *)globalBuf,PSTR("<il_id>"));
   if (p1) {
-     sscanf_P(p1,PSTR("<il_id>%u</il_id>"),&_il_id);
-	 return 1;
+     if (sscanf_P(p1,PSTR("<il_id>%u</il_id>"),&_il_id)) return 1;
   }
   return 0;
 }
@@ -25,8 +24,7 @@ uint8_t parse_il_id(){
 uint8_t parse_exp_id(){
   char* p1=strstr_P((char *)globalBuf,PSTR("<exp_id>"));
   if (p1) {
-     sscanf_P(p1,PSTR("<exp_id>%u</exp_id>"),&_exp_id);
-	 return 1;
+     if (sscanf_P(p1,PSTR("<exp_id>%u</exp_id>"),&_exp_id)) return 1;
   }
   return 0;
 }
@@ -34,8 +32,7 @@ uint8_t parse_exp_id(){
 uint8_t parse_start_time(){
   char* p1=strstr_P((char *)globalBuf,PSTR("<start_time>"));
   if (p1) {
-     sscanf_P(p1,PSTR("<start_time>%lu</start_time>"),&controller_start_time);
-	 return 1;
+     if (sscanf_P(p1,PSTR("<start_time>%lu</start_time>"),&controller_start_time)) return 1;
   }
   return 0;
 }
@@ -43,8 +40,7 @@ uint8_t parse_start_time(){
 uint8_t parse_maxTime(){
   char* p1=strstr_P((char *)globalBuf,PSTR("<maxTime>"));
   if (p1) {
-     sscanf_P(p1,PSTR("<maxTime>%u</maxTime>"),&_maxTime);
-	 return 1;
+     if (sscanf_P(p1,PSTR("<maxTime>%u</maxTime>"),&_maxTime)) return 1;
   }
   return 0;
 }
@@ -52,8 +48,7 @@ uint8_t parse_maxTime(){
 uint8_t parse_distance(){
   char* p1=strstr_P((char *)globalBuf,PSTR("<wareData distance=\""));
   if (p1) {
-     sscanf_P(p1,PSTR("<wareData distance=\"%u\""),&controller_distance);
-	 return 1;
+     if (sscanf_P(p1,PSTR("<wareData distance=\"%u\""),&controller_distance)) return 1;
   }
   return 0;
 }
@@ -184,6 +179,165 @@ char* parseNextStepTag(char* p, uint8_t sNum){
      return p;
 }
 
+uint16_t countChar(char *buf, char c){
+   uint16_t count = 0;
+   char *p = buf;
+   while (*p)
+      if (*p++ == c) count++;
+   return count;
+}
+
+uint8_t checkStartXML(){
+   char *root0=strstr_P((char *)globalBuf,PSTR("<root>"));
+   char *root1=strstr_P((char *)globalBuf,PSTR("</root>"));
+   char *action0=strstr_P((char *)globalBuf,PSTR("<action>"));
+   char *action1=strstr_P((char *)globalBuf,PSTR("</action>"));
+   char *parameters0=strstr_P((char *)globalBuf,PSTR("<parameters>"));
+   char *parameters1=strstr_P((char *)globalBuf,PSTR("</parameters>"));
+   char *il_id0=strstr_P((char *)globalBuf,PSTR("<il_id>"));
+   char *il_id1=strstr_P((char *)globalBuf,PSTR("</il_id>"));
+   char *exp_id0=strstr_P((char *)globalBuf,PSTR("<exp_id>"));
+   char *exp_id1=strstr_P((char *)globalBuf,PSTR("</exp_id>"));
+   char *start_time0=strstr_P((char *)globalBuf,PSTR("<start_time>"));
+   char *start_time1=strstr_P((char *)globalBuf,PSTR("</start_time>"));
+
+   if (root0==0
+    || root1==0
+    || action0==0
+    || action1==0
+    || parameters0==0
+    || parameters1==0
+    || il_id0==0
+    || il_id1==0
+    || exp_id0==0
+    || exp_id1==0
+    || start_time0==0
+    || start_time1==0
+   ) return 0;
+/*
+   if (strstr_P(root0+1,PSTR("<root>"))) return 0;
+   if (strstr_P(root1+1,PSTR("</root>"))) return 0;
+   if (strstr_P(action0+1,PSTR("<action>"))) return 0;
+   if (strstr_P(action1+1,PSTR("</action>"))) return 0;
+   if (strstr_P(parameters0+1,PSTR("<parameters>"))) return 0;
+   if (strstr_P(parameters1+1,PSTR("</parameters>"))) return 0;
+   if (strstr_P(il_id0+1,PSTR("<il_id>"))) return 0;
+   if (strstr_P(il_id1+1,PSTR("</il_id>"))) return 0;
+   if (strstr_P(exp_id0+1,PSTR("<exp_id>"))) return 0;
+   if (strstr_P(exp_id1+1,PSTR("</exp_id>"))) return 0;
+   if (strstr_P(start_time0+1,PSTR("<start_time>"))) return 0;
+   if (strstr_P(start_time1+1,PSTR("</start_time>"))) return 0;
+*/
+   if (! (
+       action0 > root0
+	&& parameters0 > action1
+	&& il_id0 > parameters0
+	&& exp_id0 > il_id1
+	&& start_time0 > exp_id1
+	&& parameters1 > start_time1 
+    && root1 > parameters1
+   )) return 0;
+
+   if ( !(countChar(root0, '<') == 12 && countChar(root0, '>') == 12)) return 0;
+ 
+   return 1;
+}
+
+uint8_t checkStopXML(){
+   char *root0=strstr_P((char *)globalBuf,PSTR("<root>"));
+   char *root1=strstr_P((char *)globalBuf,PSTR("</root>"));
+   char *action0=strstr_P((char *)globalBuf,PSTR("<action>"));
+   char *action1=strstr_P((char *)globalBuf,PSTR("</action>"));
+   char *parameters0=strstr_P((char *)globalBuf,PSTR("<parameters>"));
+   char *parameters1=strstr_P((char *)globalBuf,PSTR("</parameters>"));
+   char *il_id0=strstr_P((char *)globalBuf,PSTR("<il_id>"));
+   char *il_id1=strstr_P((char *)globalBuf,PSTR("</il_id>"));
+   char *exp_id0=strstr_P((char *)globalBuf,PSTR("<exp_id>"));
+   char *exp_id1=strstr_P((char *)globalBuf,PSTR("</exp_id>"));
+
+   if (root0==0
+    || root1==0
+    || action0==0
+    || action1==0
+    || parameters0==0
+    || parameters1==0
+    || il_id0==0
+    || il_id1==0
+    || exp_id0==0
+    || exp_id1==0
+   ) return 0;
+
+   if (! (
+       action0 > root0
+	&& parameters0 > action1
+	&& il_id0 > parameters0
+	&& exp_id0 > il_id1
+	&& parameters1 > exp_id1 
+    && root1 > parameters1
+   )) return 0;
+
+   if ( !(countChar(root0, '<') == 10 && countChar(root0, '>') == 10)) return 0;
+ 
+   return 1;
+}
+
+uint8_t checkSettingsXML(){
+   char *root0=strstr_P((char *)globalBuf,PSTR("<root>"));
+   char *root1=strstr_P((char *)globalBuf,PSTR("</root>"));
+   char *action0=strstr_P((char *)globalBuf,PSTR("<action>"));
+   char *action1=strstr_P((char *)globalBuf,PSTR("</action>"));
+   char *parameters0=strstr_P((char *)globalBuf,PSTR("<parameters>"));
+   char *parameters1=strstr_P((char *)globalBuf,PSTR("</parameters>"));
+   char *ip0=strstr_P((char *)globalBuf,PSTR("<ip>"));
+   char *ip1=strstr_P((char *)globalBuf,PSTR("</ip>"));
+   char *ipport0=strstr_P((char *)globalBuf,PSTR("<ipport>"));
+   char *ipport1=strstr_P((char *)globalBuf,PSTR("</ipport>"));
+   char *netmask0=strstr_P((char *)globalBuf,PSTR("<netmask>"));
+   char *netmask1=strstr_P((char *)globalBuf,PSTR("</netmask>"));
+   char *logger0=strstr_P((char *)globalBuf,PSTR("<logger>"));
+   char *logger1=strstr_P((char *)globalBuf,PSTR("</logger>"));
+   char *loggerport0=strstr_P((char *)globalBuf,PSTR("<loggerport>"));
+   char *loggerport1=strstr_P((char *)globalBuf,PSTR("</loggerport>"));
+   char *ntp0=strstr_P((char *)globalBuf,PSTR("<ntp>"));
+   char *ntp1=strstr_P((char *)globalBuf,PSTR("</ntp>"));
+
+   if (root0==0
+    || root1==0
+    || action0==0
+    || action1==0
+    || parameters0==0
+    || parameters1==0
+    || ip0==0
+    || ip1==0
+    || ipport0==0
+    || ipport1==0
+	|| netmask0==0
+	|| netmask1==0
+	|| logger0==0
+	|| logger1==0
+	|| loggerport0==0
+	|| loggerport1==0
+	|| ntp0==0
+	|| ntp1==0
+   ) return 0;
+
+   if (! (
+       action0 > root0
+	&& parameters0 > action1
+	&& ip0 > parameters0
+	&& ipport0 > ip1
+	&& netmask0 > ipport1 
+    && logger0 > netmask1
+	&& loggerport0 > logger1
+	&& ntp0 > loggerport1
+	&& parameters1 > ntp1
+   )) return 0;
+
+   if ( !(countChar(root0, '<') == 18 && countChar(root0, '>') == 18)) return 0;
+ 
+   return 1;
+}
+
 uint16_t xmlParse(uint16_t rsize){
    char *pp0, *pp1;
    if (rsize>0){
@@ -191,6 +345,10 @@ uint16_t xmlParse(uint16_t rsize){
        case 0:// expect tag action
          if(strstr_P((char *)globalBuf,PSTR("<action>start</action>"))){
            logger("Got start command\n");
+		   if (checkStartXML()==0){
+              sprintf_P ((char *)globalBuf, fromILtoFA_SPS_bad_XML_format);
+              return 0;
+		   }
            if (parse_il_id()==0 || parse_exp_id()==0){
               sprintf_P ((char *)globalBuf, fromILtoFA_SPS_start_stop_absent_params,"start");
               return 0;
@@ -221,6 +379,10 @@ uint16_t xmlParse(uint16_t rsize){
 		 }
 		 else if (strstr_P((char *)globalBuf,PSTR("<action>stop</action>"))){
            logger("Got stop command\n");
+		   if (checkStopXML()==0){
+              sprintf_P ((char *)globalBuf, fromILtoFA_SPS_bad_XML_format);
+              return 0;
+		   }
            if (parse_il_id()==0 || parse_exp_id()==0){
               sprintf_P ((char *)globalBuf, fromILtoFA_SPS_start_stop_absent_params,"stop");
               return 0;
@@ -243,6 +405,10 @@ uint16_t xmlParse(uint16_t rsize){
 		 }
 		 else if (strstr_P((char *)globalBuf,PSTR("<action>getState</action>"))){
            logger("Got getState command\n");
+		   if (checkStopXML()==0){
+              sprintf_P ((char *)globalBuf, fromILtoFA_SPS_bad_XML_format);
+              return 0;
+		   }
            if (parse_il_id()==0 || parse_exp_id()==0){
               sprintf_P ((char *)globalBuf, fromILtoFA_SPS_start_stop_absent_params,"getState");
               return 0;
@@ -252,6 +418,10 @@ uint16_t xmlParse(uint16_t rsize){
 		 }
 		 else if (strstr_P((char *)globalBuf,PSTR("<action>settings</action>"))){
            logger("Got settings command\n");
+		   if (checkSettingsXML()==0){
+              sprintf_P ((char *)globalBuf, fromILtoFA_SPS_bad_XML_format);
+              return 0;
+		   }
            parse_ip();
            parse_ipport();
            parse_netmask();
@@ -266,7 +436,7 @@ uint16_t xmlParse(uint16_t rsize){
 		   return 0;
 		 }
 		 else if (strstr_P((char *)globalBuf,PSTR("<action>configure</action>"))==0){
-           sprintf_P ((char *)globalBuf, fromILtoFA_SPS_bad_XML_format);
+           sprintf_P ((char *)globalBuf, fromILtoFA_SPS_uncknown_command);
            logger("Bad XML format\n");
 		   return 0;
 		 }
