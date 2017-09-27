@@ -23,5 +23,5 @@ ISR (TIMER1_COMPA_vect)
 	  globalTimeSec++;
       _globalTime10ms=0;
 	}
-    globalTime10ms++;
+	if (globalTime10msInProgress) globalTime10ms++;
 }

@@ -18,11 +18,14 @@ uint8_t _waitingForTimeOffset;
 
 void controller_init(){
    controller_state=CONTROLLER_STATE_NOT_CONFIGURED;
+   globalTime10ms=0;
+   globalTime10msInProgress=0;
 }
 
 void _start(){
   controller_state = CONTROLLER_STATE_PROCESS_IN_PROGRESS;
   globalTime10ms=0;
+  globalTime10msInProgress=1;
   controller_currentStep=-1;
   _waitingForTimeOffset=0;
 }
@@ -32,6 +35,7 @@ void controller_start(){
 }
 
 void controller_stop(){
+   globalTime10msInProgress=0;
    controller_state = CONTROLLER_STATE_PROCESS_STOPPED;
 }
 
@@ -59,7 +63,8 @@ void controller_loop(){
              if (globalTime10ms<_currentTimeOffset10ms) return;
              sprintf_P ((char *)globalBuf1,
 			   PSTR("elapsed_time=%lu\ttime_il=%lu\tdistance=%u\tbreakage=%hu\timpedance=%u\tattenuation=%u\tresistance=%u\n"),
-			         controller_steps[controller_currentStep].time_offset,
+//			         controller_steps[controller_currentStep].time_offset,
+			         (uint32_t)globalTime10ms*10,
                      globalTimeSec,
 					 controller_distance,
 					 controller_steps[controller_currentStep].breakage,
@@ -80,6 +85,7 @@ void controller_loop(){
 		     }
 		     else {
                 controller_state = CONTROLLER_STATE_SUCCESS;
+                globalTime10msInProgress=0;
 		     }
 		 }
 	     break;
@@ -93,6 +99,7 @@ void controller_loop(){
 }
 
 uint16_t getElapsedTime(){
-   return _currentTimeOffset10ms*10;
+//   return _currentTimeOffset10ms*10;
+   return globalTime10ms*10;
 }
 

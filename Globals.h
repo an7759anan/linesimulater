@@ -13,6 +13,8 @@ extern uint8_t globalBuf1[];
 extern uint32_t globalTimeSec;
 extern uint8_t _globalTime10ms;
 extern uint16_t globalTime10ms;
+extern uint8_t globalTime10msInProgress;
+
 
 extern uint8_t needRestart;
 

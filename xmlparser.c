@@ -108,7 +108,7 @@ void parse_loggerport(){
 
 void parse_ntp(){
   char *p1=strstr_P((char *)globalBuf,PSTR("<ntp>"));
-  sscanf_P(p1,PSTR("<logger>%hu."),&v); ntp[0]=v;
+  sscanf_P(p1,PSTR("<ntp>%hu."),&v); ntp[0]=v;
   p1=strstr_P(p1,PSTR("."));
   sscanf_P(p1,PSTR(".%hu."),&v); ntp[1]=v;
   p1=strstr_P(++p1,PSTR("."));
@@ -350,6 +350,47 @@ uint8_t checkStopXML(){
  
    return 1;
 }
+/*
+<root>
+    <action>getState</action>
+    <parameters>
+        <il_id>0</il_id>
+    </parameters>
+</root>
+*/
+uint8_t checkGetStateXML(){
+   char *root0=strstr_P((char *)globalBuf,PSTR("<root>"));
+   char *root1=strstr_P((char *)globalBuf,PSTR("</root>"));
+   char *action0=strstr_P((char *)globalBuf,PSTR("<action>"));
+   char *action1=strstr_P((char *)globalBuf,PSTR("</action>"));
+   char *parameters0=strstr_P((char *)globalBuf,PSTR("<parameters>"));
+   char *parameters1=strstr_P((char *)globalBuf,PSTR("</parameters>"));
+   char *il_id0=strstr_P((char *)globalBuf,PSTR("<il_id>"));
+   char *il_id1=strstr_P((char *)globalBuf,PSTR("</il_id>"));
+
+   if (root0==0
+    || root1==0
+    || action0==0
+    || action1==0
+    || parameters0==0
+    || parameters1==0
+    || il_id0==0
+    || il_id1==0
+   ) return 0;
+
+   if (! (
+       action0 > root0
+	&& parameters0 > action1
+	&& il_id0 > parameters0
+	&& il_id1 > il_id0
+	&& parameters1 > il_id1 
+    && root1 > parameters1
+   )) return 0;
+
+   if ( !(countChar(root0, '<') == 8 && countChar(root0, '>') == 8)) return 0;
+ 
+   return 1;
+}
 
 uint8_t checkSettingsXML(){
    char *root0=strstr_P((char *)globalBuf,PSTR("<root>"));
@@ -509,11 +550,11 @@ uint16_t xmlParse(uint16_t rsize){
 		 }
 		 else if (strstr_P((char *)globalBuf,PSTR("<action>getState</action>"))){
            logger("Got getState command\n");
-		   if (checkStopXML()==0){
+		   if (checkGetStateXML()==0){
               sprintf_P ((char *)globalBuf, fromILtoFA_SPS_bad_XML_format);
               return 0;
 		   }
-           if (parse_il_id()==0 || parse_exp_id()==0){
+           if (parse_il_id()==0){
               sprintf_P ((char *)globalBuf, fromILtoFA_SPS_start_stop_absent_params,"getState");
               return 0;
 		   }
