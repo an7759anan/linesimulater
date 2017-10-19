@@ -9,7 +9,7 @@ u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
 <result action=\"%s\" state=\"1\">\
 <parameters>\
 <il_id>%i</il_id>\
-<exp_id>%i</exp_id>\
+<exp_id>%lu</exp_id>\
 </parameters>\
 <message>Команда получена, выполняется ...</message>\
 </result>\
@@ -29,10 +29,10 @@ u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
 <result action=\"%s\" state=\"0\">\
 <parameters>\
 <il_id>%i</il_id>\
-<exp_id>%i</exp_id>\
+<exp_id>%lu</exp_id>\
 </parameters>\
 <message>Неверная команда: либо в текущем состоянии эта команда недопустима, либо содержит некорректные параметры</message>\
-<data>Состояние КИЛ=%i, il_id=%i, exp_id=%i</data>\
+<data>Состояние КИЛ=%i, il_id=%i, exp_id=%lu</data>\
 </result>\
 </root>";
 
@@ -67,7 +67,7 @@ u8"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\
     <result action=\"getState\" state=\"%i\">\
         <parameters>\
             <il_id>%i</il_id>\
-            <exp_id>%i</exp_id>\
+            <exp_id>%lu</exp_id>\
             <data>\
                 <time>\
                     <elapsed_time>%u</elapsed_time>\

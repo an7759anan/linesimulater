@@ -32,7 +32,9 @@ typedef struct _STEP {
 
 extern STEP controller_steps[];
 extern uint8_t controller_stepsNumber;
-extern uint16_t controller_il_id, controller_exp_id;
+//extern uint16_t controller_il_id, controller_exp_id;
+extern uint16_t controller_il_id;
+extern uint32_t controller_exp_id;
 extern uint32_t controller_start_time;
 extern uint16_t controller_distance;
 extern int8_t controller_currentStep;
