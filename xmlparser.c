@@ -11,7 +11,6 @@
 
 uint8_t xmlParseState=0;
 uint8_t command;// 1- configure, 2-
-//uint16_t _il_id, _exp_id, _maxTime;
 uint16_t _il_id, _maxTime;
 uint32_t _exp_id;
 
@@ -27,7 +26,6 @@ uint8_t parse_il_id(){
 uint8_t parse_exp_id(){
   char* p1=strstr_P((char *)globalBuf,PSTR("<exp_id>"));
   if (p1) {
-//     if (sscanf_P(p1,PSTR("<exp_id>%u</exp_id>"),&_exp_id)) return 1;
      if (sscanf_P(p1,PSTR("<exp_id>%lu</exp_id>"),&_exp_id)) return 1;
   }
   return 0;
