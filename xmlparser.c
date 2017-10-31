@@ -13,6 +13,7 @@ uint8_t xmlParseState=0;
 uint8_t command;// 1- configure, 2-
 uint16_t _il_id, _maxTime;
 uint32_t _exp_id;
+char buf1[120],buf2[120];
 
 
 uint8_t parse_il_id(){
@@ -509,18 +510,19 @@ uint16_t xmlParse(uint16_t rsize){
                 parse_start_time();
 				if (controller_start_time > globalTimeSec) {
 			       controller_start();
-  	               sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_ok,"start",_il_id,_exp_id);
+                   strcpy_P(buf1, commandStartOk);
+  	               sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_ok,"start",_il_id,_exp_id,buf1);
 				}
 				else {
   	               sprintf_P ((char *)globalBuf, fromILtoFA_SPS_start_bad_start_time);
 				}
 			  }
 			  else {
-	            sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_error,"start",_il_id,_exp_id,controller_state,controller_il_id,controller_exp_id);
+	            sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_error_bad_params,"start",_il_id,_exp_id,controller_state,controller_il_id,controller_exp_id);
 			  }
 		   } 
 		   else  {
-	          sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_error,"start",_il_id,_exp_id,controller_state,controller_il_id,controller_exp_id);
+	          sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_error_not_allowed,"start",_il_id,_exp_id,controller_state,controller_il_id,controller_exp_id);
 		   }
 		   return 0;
 		 }
@@ -539,14 +541,15 @@ uint16_t xmlParse(uint16_t rsize){
               parse_exp_id();
 			  if (_il_id==controller_il_id && _exp_id==controller_exp_id) {
 			     controller_stop();
-		         sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_ok,"stop",_il_id,_exp_id);
+                 strcpy_P(buf1, commandStopOk);
+		         sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_ok,"stop",_il_id,_exp_id,buf1);
 			  }
 			  else {
-	             sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_error,"stop",_il_id,_exp_id,controller_state,controller_il_id,controller_exp_id);
+	             sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_error_bad_params,"stop",_il_id,_exp_id,controller_state,controller_il_id,controller_exp_id);
               }
 		   }
 		   else {
-	          sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_error,"stop",_il_id,_exp_id,controller_state,controller_il_id,controller_exp_id);
+	          sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_error_not_allowed,"stop",_il_id,_exp_id,controller_state,controller_il_id,controller_exp_id);
 		   }
 		   return 0;
 		 }
@@ -560,7 +563,14 @@ uint16_t xmlParse(uint16_t rsize){
               sprintf_P ((char *)globalBuf, fromILtoFA_SPS_start_stop_absent_params,"getState");
               return 0;
 		   }
-		   sprintf_P ((char *)globalBuf, fromILtoFA_SPS_getState,controller_state,controller_il_id,controller_exp_id,getElapsedTime(),globalTimeSec,controller_currentStep);
+		   uint8_t idx=0;
+		   if (controller_state==CONTROLLER_STATE_CONFIG_ERROR){
+		      if (lastConfigureErrorWasNtp) idx=2;
+			  else idx=1;
+           }
+           strcpy_P(buf1, (PGM_P)pgm_read_word(&(stateStrings[controller_state])));
+           strcpy_P(buf2, (PGM_P)pgm_read_word(&(stateErrorStrings[idx])));
+		   sprintf_P ((char *)globalBuf, fromILtoFA_SPS_getState,controller_state,controller_il_id,controller_exp_id,getElapsedTime(),globalTimeSec,controller_currentStep,buf1,buf2);
 		   return 0;
 		 }
 		 else if (strstr_P((char *)globalBuf,PSTR("<action>settings</action>"))){
@@ -588,12 +598,15 @@ uint16_t xmlParse(uint16_t rsize){
 		   return 0;
 		 }
            logger("Got configure command\n");
+		   lastConfigureErrorWasNtp=0;
 		   if (checkConfigureXML_1()==0){
               sprintf_P ((char *)globalBuf, fromILtoFA_SPS_bad_XML_format);
+              controller_state = CONTROLLER_STATE_CONFIG_ERROR;
               return 0;
 		   }
            if (parse_il_id()==0 || parse_exp_id()==0 || parse_maxTime()==0 || parse_distance()==0){
               sprintf_P ((char *)globalBuf, fromILtoFA_SPS_start_stop_absent_params,"configure");
+              controller_state = CONTROLLER_STATE_CONFIG_ERROR;
               return 0;
 		   }
 		   if (  controller_state != CONTROLLER_STATE_NOT_CONFIGURED
@@ -604,7 +617,7 @@ uint16_t xmlParse(uint16_t rsize){
 			  && controller_state != CONTROLLER_STATE_EXP_ERROR
 		      ){
 		      // Not waiting for configuration ...
-	          sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_error,"configure",_il_id,_exp_id,controller_state,controller_il_id,controller_exp_id);
+	          sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_error_not_allowed,"configure",_il_id,_exp_id,controller_state,controller_il_id,controller_exp_id);
 		      return 0;
 		   }
            controller_stepsNumber=0;
@@ -636,12 +649,11 @@ uint16_t xmlParse(uint16_t rsize){
            controller_steps[controller_stepsNumber].resistance=0xFFFF;
            controller_steps[controller_stepsNumber].breakage=0;
 	       controller_stepsNumber++;
-           if (NTPclient_getState() == NTPCLIENT_STATE_SUSPENSE){
-              sendNTPRequest();
-              controller_state = CONTROLLER_STATE_IN_CONFIGURING;
-           } 
+           sendNTPRequest();
+           controller_state = CONTROLLER_STATE_IN_CONFIGURING;
            setLineLength(controller_distance*1000);
-		   sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_ok,"configure",_il_id,_exp_id);
+           strcpy_P(buf1, commandConfigureOk);
+		   sprintf_P ((char *)globalBuf, fromILtoFA_SPS_configure_start_stop_ok,"configure",_il_id,_exp_id,buf1);
            xmlParseState=0;
 		   return 0;
 	     break;

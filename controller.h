@@ -37,6 +37,6 @@ extern uint32_t controller_exp_id;
 extern uint32_t controller_start_time;
 extern uint16_t controller_distance;
 extern int8_t controller_currentStep;
-
+extern uint8_t lastConfigureErrorWasNtp;
 
 #endif
