@@ -7,7 +7,8 @@
 #include "NTPclient.h"
 
 uint8_t controller_state;
-STEP controller_steps[STEPSBUFSIZE];
+//STEP controller_steps[STEPSBUFSIZE];
+STEP_SWITCH controller_steps_switch[STEPSBUFSIZE];
 uint8_t controller_stepsNumber;
 int8_t controller_currentStep;
 uint16_t controller_il_id;
@@ -70,7 +71,7 @@ void controller_loop(){
       case CONTROLLER_STATE_PROCESS_IN_PROGRESS:
 	     if (_waitingForTimeOffset){
              if (globalTime10ms<_currentTimeOffset10ms) return;
-             sprintf_P ((char *)globalBuf1,
+/*             sprintf_P ((char *)globalBuf1,
 			   PSTR("elapsed_time=%lu\ttime_il=%lu\tdistance=%u\tbreakage=%hu\timpedance=%u\tattenuation=%u\tresistance=%u\n"),
 			         (uint32_t)globalTime10ms*10,
                      globalTimeSec,
@@ -85,10 +86,11 @@ void controller_loop(){
              setattenuation(controller_steps[controller_currentStep].attenuation);
              setresistance(controller_steps[controller_currentStep].resistance);
              _waitingForTimeOffset=0;
+*/
 		 }
 		 else {
              if (++controller_currentStep<controller_stepsNumber){
-	    		 _currentTimeOffset10ms=controller_steps[controller_currentStep].time_offset/10;
+//	    		 _currentTimeOffset10ms=controller_steps[controller_currentStep].time_offset/10;
                  _waitingForTimeOffset=1;
 		     }
 		     else {

@@ -4,6 +4,7 @@
 #include <avr/pgmspace.h>
 #include "logger.h"
 #include "Globals.h"
+#include "controller.h"
 
 uint16_t _lineLength;
 uint8_t _lineBits;
@@ -158,6 +159,13 @@ void setbreakage(uint8_t breakage){
    _breakage=breakage;
 };
 
+void setbreakageSwitch(uint8_t breakage, STEP_SWITCH *stepSwitch){
+   if (breakage == _breakage) return;
+   if (breakage==1) stepSwitch->portaSwitchOn |= 1<<PORTA7;
+   else stepSwitch->portaSwitchOff |= 1<<PORTA7;
+   _breakage=breakage;
+}
+
 void setimpendance(uint16_t impendance){
    if (impendance == _impendance) return;
    uint8_t bit=0;
@@ -213,6 +221,44 @@ void setimpendance(uint16_t impendance){
    _impendance=impendance;
 };
 
+void setimpendanceSwitch(uint16_t impendance, STEP_SWITCH *stepSwitch){
+   if (impendance == _impendance) return;
+   uint8_t bit=0;
+   switch(_impendance){
+      case 0:
+	     bit = 1<<PORTA6;
+	     break;
+      case 50:
+	     bit = 1<<PORTA5;
+	     break;
+      case 100:
+	     bit = 1<<PORTA4;
+	     break;
+      case 300:
+	     bit = 1<<PORTA3;
+	     break;
+   }
+   if (bit) stepSwitch->portaSwitchOff |= bit;
+   bit=0;
+   switch(impendance){
+      case 0:
+	     bit = 1<<PORTA6;
+	     break;
+      case 50:
+	     bit = 1<<PORTA5;
+	     break;
+      case 100:
+	     bit = 1<<PORTA4;
+	     break;
+      case 300:
+	     bit = 1<<PORTA3;
+	     break;
+   }
+   if (bit) stepSwitch->portaSwitchOn |= bit;
+   else     stepSwitch->portaSwitchOff |= 0x78;
+   _impendance=impendance;
+}
+
 void setattenuation(uint16_t attenuation){
    if (attenuation == _attenuation) return;
    uint8_t bit=0;
@@ -255,6 +301,32 @@ void setattenuation(uint16_t attenuation){
    }
    _attenuation=attenuation;
 };
+
+void setattenuationSwitch(uint16_t attenuation, STEP_SWITCH *stepSwitch){
+   if (attenuation == _attenuation) return;
+   uint8_t bit=0;
+   switch(_attenuation){
+      case 10:
+	     bit = 1<<PORTC6;
+	     break;
+      case 40:
+	     bit = 1<<PORTC7;
+	     break;
+   }
+   if (bit) stepSwitch->portcSwitchOff |= bit;
+   bit=0;
+   switch(attenuation){
+      case 10:
+	     bit = 1<<PORTC6;
+	     break;
+      case 40:
+	     bit = 1<<PORTC7;
+	     break;
+   }
+   if (bit) stepSwitch->portcSwitchOn |= bit;
+   else stepSwitch->portcSwitchOff |= 0xc0;
+   _attenuation=attenuation;
+}
 
 void setresistance(uint16_t resistance){
    if (resistance == _resistance) return;
@@ -304,6 +376,38 @@ void setresistance(uint16_t resistance){
    }
    _resistance=resistance;
 };
+
+void setresistanceSwitch(uint16_t resistance, STEP_SWITCH *stepSwitch){
+   if (resistance == _resistance) return;
+   uint8_t bit=0;
+   switch(_resistance){
+      case 0:
+	     bit = 1<<PORTA0;
+	     break;
+      case 100:
+	     bit = 1<<PORTA1;
+	     break;
+      case 20000:
+	     bit = 1<<PORTA2;
+	     break;
+   }
+   if (bit) stepSwitch->portaSwitchOff |= bit;
+   bit=0;
+   switch(resistance){
+      case 0:
+	     bit = 1<<PORTA0;
+	     break;
+      case 100:
+	     bit = 1<<PORTA1;
+	     break;
+      case 20000:
+	     bit = 1<<PORTA2;
+	     break;
+   }
+   if (bit) stepSwitch->portaSwitchOn |= bit;
+   else    stepSwitch->portaSwitchOff |= 0x03;
+   _resistance=resistance;
+}
 
 uint16_t getLineLength(void){return _lineLength;};
 uint8_t getbreakage(void){return _breakage;};
