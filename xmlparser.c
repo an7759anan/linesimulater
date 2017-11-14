@@ -173,12 +173,7 @@ char* parseNextStepTag(char* p, uint8_t sNum){
   char* p1=strstr_P(p,PSTR("<step"));
   char* p2;
   char* p3;
-  uint16_t _impendance;
-  uint16_t _attenuation;
-  uint16_t _resistance;
-  uint8_t _breakage;
 
-//  STEP *step=&(controller_steps[sNum]);
   STEP_SWITCH *stepSwitchP=&(controller_steps_switch[sNum]);
   if (p1){
     p2=strstr_P(p1,PSTR("/>"));
@@ -197,64 +192,48 @@ char* parseNextStepTag(char* p, uint8_t sNum){
           parseNextStepTagXMLformatError=1;
 		  return 0;
 	   }
-/*       step->impedance=0xFFFF;
-       step->attenuation=0xFFFF;
-       step->resistance=0xFFFF;
-       step->breakage=0;
-*/
-       _impendance=0xFFFF;
-       _attenuation=0xFFFF;
-       _resistance=0xFFFF;
-       _breakage=0;
+       stepSwitchP->impedance=0xFFFF;
+       stepSwitchP->attenuation=0xFFFF;
+       stepSwitchP->resistance=0xFFFF;
+       stepSwitchP->breakage=0;
 
        p3=strstr_P(p1,PSTR("time_offset="));
 	   if (p3==0){
           parseNextStepTagXMLformatError=1;
 		  return 0;
 	   }
-//       if(sscanf_P(p3,PSTR("time_offset=\"%lu\""),&step->time_offset)==0){
        if(sscanf_P(p3,PSTR("time_offset=\"%lu\""),&stepSwitchP->time_offset)==0){
           parseNextStepTagXMLformatError=1;
 		  return 0;
 	   }
-
 	   if (strstr_P(p1,PSTR("\"norm\""))){
 	   }
 	   else if (strstr_P(p1,PSTR("\"line_shorting\""))){
-//          step->impedance=0;
-          _impendance=0;
+          stepSwitchP->impedance=0;
 	   }
 	   else if (strstr_P(p1,PSTR("\"earth_shorting\""))){
-//          step->resistance=0;
-          _resistance=0;
+          stepSwitchP->resistance=0;
 	   }
 	   else if (strstr_P(p1,PSTR("\"line_break\""))){
-//          step->breakage=1;
-          _breakage=1;
+          stepSwitchP->breakage=1;
 	   }
 	   else if (strstr_P(p1,PSTR("\"crushed\""))){
-//          step->breakage=1;
-          _breakage=1;
+          stepSwitchP->breakage=1;
 	   }
 	   else if (strstr_P(p1,PSTR("\"bended\""))){
-//          step->breakage=1;
-          _breakage=1;
+          stepSwitchP->breakage=1;
 	   }
 	   else if (strstr_P(p1,PSTR("\"overheated\""))){
-//          step->breakage=1;
-          _breakage=1;
+          stepSwitchP->breakage=1;
 	   }
 	   else if (strstr_P(p1,PSTR("\"inside explosion funnel\""))){
-//          step->breakage=1;
-          _breakage=1;
+          stepSwitchP->breakage=1;
 	   }
 	   else if (strstr_P(p1,PSTR("\"fail command post\""))){
-//          step->breakage=1;
-          _breakage=1;
+          stepSwitchP->breakage=1;
 	   }
 	   else if (strstr_P(p1,PSTR("\"overtension\""))){
-//          step->breakage=1;
-          _breakage=1;
+          stepSwitchP->breakage=1;
 	   }
 	   else {
 	      parseNextStepTagXMLformatError=1;
@@ -263,10 +242,10 @@ char* parseNextStepTag(char* p, uint8_t sNum){
        logger(p1);logger("\n");
 	   *p2='/';
 
-       setbreakageSwitch(_breakage, stepSwitchP);
-       setimpendanceSwitch(_impendance, stepSwitchP);
-       setattenuationSwitch(_attenuation, stepSwitchP);
-       setresistanceSwitch(_resistance, stepSwitchP);
+       setbreakageSwitch(stepSwitchP->breakage, stepSwitchP);
+       setimpendanceSwitch(stepSwitchP->impedance, stepSwitchP);
+       setattenuationSwitch(stepSwitchP->attenuation, stepSwitchP);
+       setresistanceSwitch(stepSwitchP->resistance, stepSwitchP);
 
 	   return p2+2;
 	} else {// Finish step tag not found
@@ -669,15 +648,14 @@ uint16_t xmlParse(uint16_t rsize){
            controller_stepsNumber--;
            controller_il_id=_il_id;
 		   controller_exp_id=_exp_id;
-//           controller_steps[controller_stepsNumber].time_offset=_maxTime*1000;
            controller_steps_switch[controller_stepsNumber].time_offset=_maxTime*1000;
-//           controller_steps[controller_stepsNumber].impedance=0xFFFF;
+           controller_steps_switch[controller_stepsNumber].impedance=0xFFFF;
            setimpendanceSwitch(0xFFFF, &controller_steps_switch[controller_stepsNumber]);
-//           controller_steps[controller_stepsNumber].attenuation=0xFFFF;
+           controller_steps_switch[controller_stepsNumber].attenuation=0xFFFF;
            setattenuationSwitch(0xFFFF, &controller_steps_switch[controller_stepsNumber]);
-//           controller_steps[controller_stepsNumber].resistance=0xFFFF;
+           controller_steps_switch[controller_stepsNumber].resistance=0xFFFF;
            setresistanceSwitch(0xFFFF, &controller_steps_switch[controller_stepsNumber]);
-//           controller_steps[controller_stepsNumber].breakage=0;
+           controller_steps_switch[controller_stepsNumber].breakage=0;
            setbreakageSwitch(0, &controller_steps_switch[controller_stepsNumber]);
 	       controller_stepsNumber++;
            sendNTPRequest();

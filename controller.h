@@ -22,15 +22,7 @@ void controller_loop();
 uint16_t getElapsedTime();
 
 extern uint8_t controller_state;
-/*
-typedef struct _STEP {
-  uint32_t time_offset;
-  uint16_t impedance;
-  uint16_t attenuation;
-  uint16_t resistance;
-  uint8_t breakage;
-} STEP;
-*/
+
 typedef struct _STEP_SWITCH {
   uint32_t time_offset;
   uint8_t portaSwitchOff;
@@ -43,14 +35,13 @@ typedef struct _STEP_SWITCH {
   uint8_t breakage;
 } STEP_SWITCH;
 
-//extern STEP controller_steps[];
 extern STEP_SWITCH controller_steps_switch[];
 extern uint8_t controller_stepsNumber;
 extern uint16_t controller_il_id;
 extern uint32_t controller_exp_id;
 extern uint32_t controller_start_time;
 extern uint16_t controller_distance;
-extern int8_t controller_currentStep;
+extern uint8_t controller_currentStep;
 extern uint8_t lastConfigureErrorWasNtp;
 
 #endif
